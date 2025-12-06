@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gab's Earnings Tracker</title>
+
+<!-- PWA manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#ff4500">
+
+<style>
+body { font-family: Arial, sans-serif; background:#f0f8ff; padding:20px; color:#333; }
+h1 { text-align:center; color:#ff4500; margin-bottom:20px; }
+.service-card { background:#fff; padding:15px; margin-bottom:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.2); display:flex; justify-content:space-between; align-items:center; }
+.service-name { font-weight:bold; }
+.buttons { display:flex; align-items:center; gap:5px; }
+.btn { font-size:18px; padding:8px 12px; border:none; border-radius:8px; cursor:pointer; color:#fff; }
+.btn-add { background:#4CAF50; }
+.btn-sub { background:#f44336; }
+.counter { font-size:18px; width:35px; text-align:center; }
+.total { text-align:center; font-size:20px; font-weight:bold; margin-top:20px; }
+.reset-btn { display:block; margin:20px auto; padding:10px 20px; background:#ff9800; color:#fff; border:none; border-radius:8px; font-size:16px; cursor:pointer; }
+</style>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js')
+    .then(reg => console.log('Service Worker registered'))
+    .catch(err => console.log('Service Worker failed:', err));
+  });
+}
+</script>
+
+</head>
+<body>
+
+<h1>💻 Gab's Earnings Tracker 💻</h1>
+
+<div class="service-card">
+  <span class="service-name">📱 Speed up phone (₱20)</span>
+  <div class="buttons">
+    <button class="btn btn-sub" onclick="changeCount('speedUp', -1)">-</button>
+    <span class="counter" id="speedUp-count">0</span>
+    <button class="btn btn-add" onclick="changeCount('speedUp', 1)">+</button>
+  </div>
+</div>
+
+<div class="service-card">
+  <span class="service-name">🗂 Free up storage (₱15)</span>
+  <div class="buttons">
+    <button class="btn btn-sub" onclick="changeCount('storage', -1)">-</button>
+    <span class="counter" id="storage-count">0</span>
+    <button class="btn btn-add" onclick="changeCount('storage', 1)">+</button>
+  </div>
+</div>
+
+<div class="service-card">
+  <span class="service-name">📲 Install apps (₱5)</span>
+  <div class="buttons">
+    <button class="btn btn-sub" onclick="changeCount('install', -1)">-</button>
+    <span class="counter" id="install-count">0</span>
+    <button class="btn btn-add" onclick="changeCount('install', 1)">+</button>
+  </div>
+</div>
+
+<div class="service-card">
+  <span class="service-name">🚫 Remove pop-ups/virus (₱30)</span>
+  <div class="buttons">
+    <button class="btn btn-sub" onclick="changeCount('virus', -1)">-</button>
+    <span class="counter" id="virus-count">0</span>
+    <button class="btn btn-add" onclick="changeCount('virus', 1)">+</button>
+  </div>
+</div>
+
+<div class="service-card">
+  <span class="service-name">🌐 Teach Wi-Fi setup (₱10)</span>
+  <div class="buttons">
+    <button class="btn btn-sub" onclick="changeCount('wifi', -1)">-</button>
+    <span class="counter" id="wifi-count">0</span>
+    <button class="btn btn-add" onclick="changeCount('wifi', 1)">+</button>
+  </div>
+</div>
+
+<div class="service-card">
+  <span class="service-name">🎨 Teach Canva/video (₱20)</span>
+  <div class="buttons">
+    <button class="btn btn-sub" onclick="changeCount('canva', -1)">-</button>
+    <span class="counter" id="canva-count">0</span>
+    <button class="btn btn-add" onclick="changeCount('canva', 1)">+</button>
+  </div>
+</div>
+
+<div class="service-card">
+  <span class="service-name">💻 Teach Scratch coding (₱20)</span>
+  <div class="buttons">
+    <button class="btn btn-sub" onclick="changeCount('scratch', -1)">-</button>
+    <span class="counter" id="scratch-count">0</span>
+    <button class="btn btn-add" onclick="changeCount('scratch', 1)">+</button>
+  </div>
+</div>
+
+<div class="total">Total: ₱<span id="total">0</span></div>
+<button class="reset-btn" onclick="resetAll()">Reset All</button>
+
+<script>
+const prices = { speedUp:20, storage:15, install:5, virus:30, wifi:10, canva:20, scratch:20 };
+const counts = {};
+for (let key in prices) {
+  counts[key] = parseInt(localStorage.getItem(key)) || 0;
+  document.getElementById(key+'-count').innerText = counts[key];
+}
+function updateTotal() {
+  let total = 0;
+  for (let key in counts) total += counts[key]*prices[key];
+  document.getElementById('total').innerText = total;
+}
+function changeCount(service, amount) {
+  counts[service]+=amount;
+  if(counts[service]<0) counts[service]=0;
+  document.getElementById(service+'-count').innerText = counts[service];
+  localStorage.setItem(service, counts[service]);
+  updateTotal();
+}
+function resetAll() {
+  if(confirm("Reset all counts?")) {
+    for(let key in counts){ counts[key]=0; document.getElementById(key+'-count').innerText=0; localStorage.setItem(key,0);}
+    updateTotal();
+  }
+}
+updateTotal();
+</script>
+
+</body>
+</html>
